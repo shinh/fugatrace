@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+GIT_ID = "$Id$"
+
 require 'cgi'
 require 'expect'
 require 'optparse'
