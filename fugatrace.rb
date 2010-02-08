@@ -138,10 +138,13 @@ exclude_func_regexp = nil
 output_html = 'trace.html'
 logfile = nil
 simple = false
-# TODO: implement abbreviation
+# TODO: implement abbreviation?
 abbreviate_same_children = 3
 original_args = escape_argv(ARGV)
 breakpoint_specifiers = ''
+
+# TODO: re-organize command line options. Maybe -r -R -f -F -g .
+# TODO: file name suppression
 
 OptionParser.new do |opt|
   opt.on('-h', '--help') { usage(opt) }
