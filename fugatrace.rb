@@ -160,9 +160,9 @@ simple = false
 abbreviate_same_children = 3
 original_args = escape_argv(ARGV)
 breakpoint_specifiers = ''
+suppress_prefix = ''
 
 # TODO: re-organize command line options. Maybe -r -R -f -F -g .
-# TODO: file name suppression
 
 OptionParser.new do |opt|
   opt.on('-h', '--help') { usage(opt) }
@@ -176,6 +176,7 @@ OptionParser.new do |opt|
          "comma separated list of [GDB-COMMAND@]GDB-BREAK (e.g., 'p var@test.c:3')") {|v|
     breakpoint_specifiers = v
   }
+  opt.on('-s', '--suppress-prefix PREFIX') {|v| suppress_prefix = v }
 
   opt.parse!(ARGV)
 
@@ -472,6 +473,10 @@ begin
         breakpoint_id = $1.to_i
         call = $2
         stop_functions[$1.to_i] = $3
+
+        if !suppress_prefix.empty?
+          call.sub!(/ at #{suppress_prefix}/, ' at ')
+        end
 
         bt = gdb.command('bt').split("\n")
 
