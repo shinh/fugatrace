@@ -171,7 +171,7 @@ OptionParser.new do |opt|
   opt.on('-o', '--output FILENAME') {|v| output_html = v }
   opt.on('-l', '--logfile [FILENAME]') {|v| logfile = v || 'trace_log.txt' }
   opt.on('-s', '--simple') { simple = true }
-  opt.on('-a', '--abbreviate NUM', Integer) {|v| abbreviate_same_children = v }
+  #opt.on('-a', '--abbreviate NUM', Integer) {|v| abbreviate_same_children = v }
   opt.on('-b', '--breakpoints [BREAKS]',
          "comma separated list of [GDB-COMMAND@]GDB-BREAK (e.g., 'p var@test.c:3')") {|v|
     breakpoint_specifiers = v
