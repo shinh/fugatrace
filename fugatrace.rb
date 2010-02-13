@@ -36,6 +36,8 @@ def escape_argv(argv)
 end
 
 def parse_comma_separated_gdb_commands(specifier)
+  return [] if specifier.empty?
+
   cur_cmd = ''
   cmds = [cur_cmd]
   num_open_paren = 0
