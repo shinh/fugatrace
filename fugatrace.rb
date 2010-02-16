@@ -461,7 +461,7 @@ begin
     end
 
     if simple
-      if /Breakpoint (\d+), ((\w+) \(.* at .*:\d+)\n/ =~ lines
+      if /Breakpoint (\d+), (([\w:~]+) \(.* at .*:\d+)\n/ =~ lines
         puts $2
         html.puts "<li>#$2"
         gdb.puts('cont')
@@ -469,7 +469,7 @@ begin
         raise
       end
     else
-      if /Breakpoint (\d+), ((\w+) \(.* at .*:\d+)\n/ =~ lines
+      if /Breakpoint (\d+), (([\w:~]+) \(.* at .*:\d+)\n/ =~ lines
         breakpoint_id = $1.to_i
         call = $2
         stop_functions[$1.to_i] = $3
