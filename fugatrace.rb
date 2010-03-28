@@ -23,6 +23,16 @@ require 'cgi'
 require 'expect'
 require 'optparse'
 
+class String
+  unless defined?(each_char)
+    def each_char
+      each_byte do |b|
+        yield b.chr
+      end
+    end
+  end
+end
+
 def usage(opt)
   puts "Usage: #$0 <args>..."
   puts opt.to_a[1..-1]
@@ -223,7 +233,7 @@ parse_comma_separated_gdb_commands(breakpoint_specifiers).each do |breakpoint_sp
 end
 
 if func_gdb_regexp
-  puts "Setting breakpoints for symbols by rbreak... (this may take long time if -r option is ambiguous)"
+  puts "Setting breakpoints for symbols by rbreak... (this may take long time if -g option is ambiguous)"
   lines = gdb.command("rbreak #{func_gdb_regexp}")
 
   if exclude_func_regexp
