@@ -168,7 +168,7 @@ suppress_prefix = ''
 OptionParser.new do |opt|
   opt.on('-h', '--help') { usage(opt) }
   opt.on('-g', '--gdb-regexp FUNC-REGEXP') {|v| func_gdb_regexp = v }
-  opt.on('-r', '--regexp FUNC-REGEXP') {|v| func_regexp = v }
+  #opt.on('-r', '--regexp FUNC-REGEXP') {|v| func_regexp = v }
   opt.on('-R', '--exclude-regexp FUNC-REGEXP') {|v| exclude_func_regexp = v }
   opt.on('-o', '--output FILENAME') {|v| output_html = v }
   opt.on('-l', '--logfile [FILENAME]') {|v| logfile = v || 'trace_log.txt' }
@@ -236,8 +236,10 @@ if func_gdb_regexp
       stop_positions[breakpoint_id] = $2
     else
       if !breakpoint_id
-        STDERR.puts lines
-        raise
+        # TODO: Ignoring for now because this may be just a warning messages like...
+        next
+        #STDERR.puts lines
+        #raise
       end
       if exclude_func_regexp && exclude_func_regexp =~ line
         gdb.command("disable #{breakpoint_id}")
