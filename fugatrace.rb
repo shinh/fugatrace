@@ -151,7 +151,8 @@ OPENED_NODE = '-'
 CLOSED_NODE = '+'
 
 exit_message = %Q(<p style="color:red">fugatrace BUG: no exit messages)
-func_regexp = ''
+func_gdb_regexp = nil
+func_regexp = nil
 exclude_func_regexp = nil
 output_html = 'trace.html'
 logfile = nil
@@ -166,6 +167,7 @@ suppress_prefix = ''
 
 OptionParser.new do |opt|
   opt.on('-h', '--help') { usage(opt) }
+  opt.on('-g', '--gdb-regexp FUNC-REGEXP') {|v| func_gdb_regexp = v }
   opt.on('-r', '--regexp FUNC-REGEXP') {|v| func_regexp = v }
   opt.on('-R', '--exclude-regexp FUNC-REGEXP') {|v| exclude_func_regexp = v }
   opt.on('-o', '--output FILENAME') {|v| output_html = v }
@@ -220,29 +222,35 @@ parse_comma_separated_gdb_commands(breakpoint_specifiers).each do |breakpoint_sp
   end
 end
 
-puts "Setting breakpoints for symbols... (this may take long time without -r option)"
-# TODO: We may want to use info functions instead of rbreak.
-lines = gdb.command("rbreak #{func_regexp}")
-if exclude_func_regexp
-  exclude_func_regexp = /\b#{exclude_func_regexp}\(/
-end
-breakpoint_id = nil
-lines.each do |line|
-  if /^Breakpoint (\d+) at (.*)\./ =~ line
-    breakpoint_id = $1.to_i
-    stop_positions[breakpoint_id] = $2
-  else
-    if !breakpoint_id
-      STDERR.puts lines
-      raise
-    end
-    if exclude_func_regexp && exclude_func_regexp =~ line
-      gdb.command("disable #{breakpoint_id}")
-    else
-      stopped[breakpoint_id] = []
-    end
-    breakpoint_id = nil
+if func_gdb_regexp
+  puts "Setting breakpoints for symbols by rbreak... (this may take long time if -r option is ambiguous)"
+  lines = gdb.command("rbreak #{func_gdb_regexp}")
+
+  if exclude_func_regexp
+    exclude_func_regexp = /\b#{exclude_func_regexp}\(/
   end
+  breakpoint_id = nil
+  lines.each do |line|
+    if /^Breakpoint (\d+) at (.*)\./ =~ line
+      breakpoint_id = $1.to_i
+      stop_positions[breakpoint_id] = $2
+    else
+      if !breakpoint_id
+        STDERR.puts lines
+        raise
+      end
+      if exclude_func_regexp && exclude_func_regexp =~ line
+        gdb.command("disable #{breakpoint_id}")
+      else
+        stopped[breakpoint_id] = []
+      end
+      breakpoint_id = nil
+    end
+  end
+end
+
+if func_regexp
+  
 end
 
 puts "Start the program."
